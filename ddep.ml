@@ -63,7 +63,7 @@ module Depgraph = struct
       (* We only care about move instructions *)
       method! enter_move var exp (index, result) =
         (* Think of var as the lhs of an assignment, a definition of op *)
-        if Bap_var.(var = op) then 
+        if Var.(var = op) then 
           begin
             (* Verbose output
              * Format.printf "%d op: %s var: %s\n" 
@@ -100,7 +100,7 @@ module Depgraph = struct
              * to get the statement corresponding to it
              * do visit_var for each operand in exp *)
             let operands = 
-              (object inherit [Bap_bil.var list] Bil.visitor
+              (object inherit [Var.t list] Bil.visitor
                 method! enter_var v ll =
                   v::ll
               end)#visit_exp exp [] in (* visit only expressions *)
