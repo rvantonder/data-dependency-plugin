@@ -13,15 +13,21 @@ Run `run.sh`.
 * We highlight the two statements in the graph which serve as arguments for `strcpy`:
 
 ```
+...
 8: jmp 0x82E0:32     <- strcpy call
 9: LR := 0x849C:32
 10: R1 := R3         <- highlighted
 11: R0 := R2         <- highlighted
+...
 ```
+
+# Graph
+
+![ddepgraph](ddep.png)
 
 (Note statements are in reverse of execution order)
 
-Full output:
+# Full output:
 
 ```
 0: jmp (mem[base_478 + 0x4:32, el]:u32)                                         0: ()
