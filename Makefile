@@ -1,4 +1,5 @@
 all:
-	bapbuild -pkg ocamlgraph ddep.plugin
+	bapbuild data_deps.plugin
+
 clean:
-	rm -r _build *.plugin *.dot *.png
+	rm -rf _build *.plugin *.dot *.png
