@@ -1,5 +1,4 @@
-make
+#!/bin/bash
 
-bap-objdump bin/strcpy_g --use-ida -l ddep
-
-dot -Tpng ddep.dot > ddep.png
+bap bin/strcpy_g -ldata_deps --data_deps-infile=in.txt --data_deps-idascript=script.py
+#idaq64 -OIDAPython:`pwd`/script.py bin/strcpy_g
