@@ -171,7 +171,7 @@ let output_verbose_reaching_defs disasm dataflow =
           Format.printf "\t<%a> %s\n"
             Dataflow.Address.pp addr @@ strip @@ Stmt.to_string stmt))
 
-let output_verbose_data_deps dependency =
+let output_verbose_data_deps disasm dependency =
   Format.printf "\nFunction %s\n" dependency.sym;
   let addr,header = dependency.stmt in
   print_header addr header;
@@ -215,16 +215,29 @@ let output_script idascript result =
           Out_channel.output_string chan @@ ida_stmt_higlight x;
           let int_addrs = List.map x.deps ~f:(fun (addr,_stmt) ->
               int_of_dataflow_addr addr) in
-          Out_channel.output_lines chan (int_addrs |> List.map ~f:(fun x ->
+          Out_channel.output_lines chan (int_addrs |> List.dedup |> List.map ~f:(fun x ->
               ida_dependency_highlight x))))
+
+(* TODO remove sym? *)
+let annotate disasm mem entry =
+  let header_mem = Dataflow.mem_from_dataflow_addr disasm @@ fst entry.stmt in
+  Format.printf "--Annotating y: %a\n" Memory.pp header_mem;
+  let mem = Memmap.add mem header_mem (Tag.create color `yellow) in
+  let deps_mem = List.map entry.deps ~f:(fun x ->
+      Dataflow.mem_from_dataflow_addr disasm @@ fst x) |> List.dedup in
+  List.fold deps_mem ~init:mem ~f:(fun mem x ->
+      Format.printf "Annotating b: %a\n" Memory.pp x;
+      Memmap.add mem x (Tag.create color `blue))
 
 let main args project =
   let addrs_of_interest,idascript = Cmdline.parse args in
   let result =
     List.fold ~init:[] addrs_of_interest ~f:(fun acc x ->
         (process_addr project x) :: acc) in
-  List.iter result ~f:output_verbose_data_deps;
+  List.iter result ~f:(fun x -> output_verbose_data_deps project.disasm x);
   if String.length idascript > 0 then output_script idascript result;
-  ()
+  let memory = List.fold result ~init:project.memory
+      ~f:(fun mem entry -> annotate project.disasm mem entry) in
+  {project with memory}
 
-let () = register_plugin_with_args' main
+let () = register_plugin_with_args main

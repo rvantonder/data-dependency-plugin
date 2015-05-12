@@ -87,3 +87,6 @@ val find_bil : dataflow -> Address.t -> Domain.t option
 
 (* Internal: Set the lattice value associated with a BIL statement. *)
 val set_bil : dataflow -> Address.t -> Domain.t -> unit
+
+(* Return the memory associated with a dataflow address *)
+val mem_from_dataflow_addr : disasm -> Address.t -> mem
