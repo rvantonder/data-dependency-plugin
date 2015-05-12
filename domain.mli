@@ -4,7 +4,7 @@ open Core_kernel.Std
 type t with sexp
 
 (* Constructor for infinite size domain value, where false is the empty set and
-true is the universal set *)
+ * true is the universal set *)
 val create_infinite : bool -> t
 
 (* Constructor for finite size domain value, given a bit value (false -> 0,
@@ -17,8 +17,8 @@ val empty : t
 (* Creates a universal domain value *)
 val univ : t
 
-(* Inverts the representation of a given domain value with optional width.
-Does not actually change the value of the set, e.g. a = invert a *)
+(* Inverts the representation of a given domain value with optional width. Does
+ * not actually change the value of the set, e.g. a = invert a *)
 val invert : ?width:int -> t -> t
 
 (* Intersect two domain values *)
@@ -39,8 +39,8 @@ val get_indices : t -> Int.Set.t
 (* Get the value of a domain value *)
 val get_value : t -> bool
 
-(* Fold through the singleton domain values each corresponding
-to a single set bit in the domain value *)
+(* Fold through the singleton domain values each corresponding to a single set
+ * bit in the domain value *)
 val fold : t -> init:'a -> f:('a -> t -> 'a) -> 'a
 
 (* Pretty-print formatter *)

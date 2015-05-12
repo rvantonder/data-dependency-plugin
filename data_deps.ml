@@ -215,18 +215,16 @@ let output_script idascript result =
           Out_channel.output_string chan @@ ida_stmt_higlight x;
           let int_addrs = List.map x.deps ~f:(fun (addr,_stmt) ->
               int_of_dataflow_addr addr) in
-          Out_channel.output_lines chan (int_addrs |> List.dedup |> List.map ~f:(fun x ->
-              ida_dependency_highlight x))))
+          Out_channel.output_lines chan
+            (int_addrs |> List.dedup |> List.map ~f:(fun x ->
+                 ida_dependency_highlight x))))
 
-(* TODO remove sym? *)
 let annotate disasm mem entry =
   let header_mem = Dataflow.mem_from_dataflow_addr disasm @@ fst entry.stmt in
-  Format.printf "--Annotating y: %a\n" Memory.pp header_mem;
   let mem = Memmap.add mem header_mem (Tag.create color `yellow) in
   let deps_mem = List.map entry.deps ~f:(fun x ->
       Dataflow.mem_from_dataflow_addr disasm @@ fst x) |> List.dedup in
   List.fold deps_mem ~init:mem ~f:(fun mem x ->
-      Format.printf "Annotating b: %a\n" Memory.pp x;
       Memmap.add mem x (Tag.create color `blue))
 
 let main args project =
