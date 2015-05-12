@@ -47,6 +47,19 @@ module Address = struct
       result
     | None -> None
 
+  let find_bil insns ~f =
+    List.fold ~init:[] ~f:(fun accum (mem, insn) ->
+        accum @ snd @@ Bil.fold ~init:(create (Memory.min_addr mem) 0, []) (object
+          inherit [t * (t * stmt) list] Bil.visitor
+          method! enter_stmt stmt (address, ret) =
+            match f stmt with
+            | true -> (address, (address, stmt) :: ret)
+            | false -> (address, ret)
+          method! leave_stmt _ ((addr, idx), ret) =
+            ((addr, idx + 1), ret)
+        end) (Insn.bil insn)
+      ) insns
+
   include Comparable.Make(T)
   include Hashable.Make(T)
 end

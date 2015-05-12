@@ -20,6 +20,9 @@ module Address : sig
   (* Return the BIL statement corresponding to an Address.t given disassembly *)
   val to_bil : t -> disasm -> stmt option
 
+  (* Finds BIL instructions that satisfy some conditions given a list of instructions *)
+  val find_bil : (mem * insn) list -> f:(stmt -> bool) -> (t * stmt) list
+
   include Comparable with type t:=t
   include Hashable with type t:=t
 end
