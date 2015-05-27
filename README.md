@@ -5,12 +5,7 @@ The addresses of these statements should be put in a file (see `in.txt` for an
 example) and then passed to the plugin (see `run.sh`). The statements (data
 dependencies themselves) are colored in blue.
 
-Here are some examples:
-
-![one](screenshots/data_deps_fgets.png)
-
-The following example can be produced by running `./run.sh`
-(if you don't have IDA, you can observe the output to stdout)
+Here is an example:
 
 ![two](screenshots/data_deps_printf_chk.png)
 
@@ -23,6 +18,10 @@ plugin on `bin/coreutils_O1_cat` for "fortified" functions such as
 `__printf_chk`
 
 ##### Notes
+
+This dependenc relies on a dataflow framework which generates reaching
+definitions. From these reaching definitions data dependencies are calculatted
+using use-def changs.
 
 There are two ways to emit ida scripts. One is to use
 `--data_deps-idascript=script.py`. The other is `--emit-ida-script=scripty.py`.
