@@ -221,11 +221,21 @@ let output_script idascript result =
 
 let annotate disasm mem entry =
   let header_mem = Dataflow.mem_from_dataflow_addr disasm @@ fst entry.stmt in
-  let mem = Memmap.add mem header_mem (Tag.create color `yellow) in
+  let mem = Memmap.add mem header_mem (Value.create color `yellow) in
   let deps_mem = List.map entry.deps ~f:(fun x ->
       Dataflow.mem_from_dataflow_addr disasm @@ fst x) |> List.dedup in
   List.fold deps_mem ~init:mem ~f:(fun mem x ->
-      Memmap.add mem x (Tag.create color `blue))
+      Memmap.add mem x (Value.create color `blue))
+
+(* TODO case out on color *)
+let print_substitution project =
+  let project = Project.substitute project in
+  let buf = Buffer.create 4096 in
+  Memmap.iter project.memory ~f:(fun tag ->
+      match Value.get python tag with
+      | Some line -> Buffer.add_string buf line
+      | None -> ());
+  Format.printf "%s\n" @@ Buffer.contents buf
 
 let main args project =
   let addrs_of_interest,idascript = Cmdline.parse args in
@@ -236,6 +246,7 @@ let main args project =
   if String.length idascript > 0 then output_script idascript result;
   let memory = List.fold result ~init:project.memory
       ~f:(fun mem entry -> annotate project.disasm mem entry) in
+  print_substitution {project with memory};
   {project with memory}
 
 let () = register_plugin_with_args main
